@@ -22,6 +22,18 @@ var client = new Twitter(keys.twitter);
 var clo = process.argv.slice(2)
 var cmd = clo[0]
 
+// Log command and output to screen and file (like Unix 'tee' command)
+const logFile = "log.txt"
+fs.appendFile(logFile, "\n" + clo.join(' ') + "\n", error => {
+    if (error) {
+        console.log(error)
+    }
+})
+function tee(message) {
+    fs.appendFileSync(logFile, message  + '\n')
+    console.log(message)
+}
+
 // Check for 'do-what-it-says
 if (cmd === 'do-what-it-says') {
     fs.readFile("./random.txt", "utf8", (error, data) => {
@@ -47,7 +59,7 @@ function execLiriCmd(cmd) {
                     console.log(error)
                 } else {
                     tweets.forEach(tweet => {
-                        console.log(tweet.text)
+                        tee(tweet.text)
                     });
                 }
             })
@@ -61,14 +73,14 @@ function execLiriCmd(cmd) {
                 } else {
                     console.log('Artist(s): ')
                     data.tracks.items[0].album.artists.forEach(artist => {
-                        console.log("  " + artist.name)
+                        tee("  " + artist.name)
                     })
-                    console.log('Title: ')
-                    console.log('  ' + data.tracks.items[0].name)
-                    console.log('Preview Link: ')
-                    console.log('  ' + data.tracks.items[0].preview_url)
-                    console.log('Album: ')
-                    console.log('  ' + data.tracks.items[0].album.name)
+                    tee('Title: ')
+                    tee('  ' + data.tracks.items[0].name)
+                    tee('Preview Link: ')
+                    tee('  ' + data.tracks.items[0].preview_url)
+                    tee('Album: ')
+                    tee('  ' + data.tracks.items[0].album.name)
                 }
 
             })
@@ -78,10 +90,10 @@ function execLiriCmd(cmd) {
             request("http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
                 if (!error && response.statusCode === 200) {
                     let info = JSON.parse(body)
-                    console.log("Title: ")
-                    console.log(info.Title)
-                    console.log("Year: ")
-                    console.log(info.Year)
+                    tee("Title: ")
+                    tee(info.Title)
+                    tee("Year: ")
+                    tee(info.Year)
 
                     let ratings = info.Ratings
                     let imdbRating = ""
@@ -96,25 +108,25 @@ function execLiriCmd(cmd) {
                                 break
                         }
                     })
-                    console.log("IMDB Rating: ")
-                    console.log(imdbRating)
-                    console.log("Rotten Tomatoes Rating: ")
-                    console.log(rtRating)
-                    console.log("Country of origin: ")
-                    console.log(info.Country)
-                    console.log("Language: ")
-                    console.log(info.Language)
-                    console.log("Plot: ")
-                    console.log(info.Plot)
-                    console.log("Actors: ")
-                    console.log(info.Actors)
+                    tee("IMDB Rating: ")
+                    tee(imdbRating)
+                    tee("Rotten Tomatoes Rating: ")
+                    tee(rtRating)
+                    tee("Country of origin: ")
+                    tee(info.Country)
+                    tee("Language: ")
+                    tee(info.Language)
+                    tee("Plot: ")
+                    tee(info.Plot)
+                    tee("Actors: ")
+                    tee(info.Actors)
                 }
             })
             break
         case 'do-what-it-says':
             return
         default:
-            console.log("Command '" + cmd + "' not recognized!!")
+            tee("Command '" + cmd + "' not recognized!!")
     }
 }
 
