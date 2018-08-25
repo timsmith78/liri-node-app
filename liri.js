@@ -123,8 +123,8 @@ function execLiriCmd(cmd) {
                 }
             })
             break
-	case 'yahoo-this'
-	    return
+	case 'google-this':
+	    return	
         case 'do-what-it-says':
             return
         default:
